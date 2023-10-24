@@ -1,0 +1,12 @@
+{
+    "configurations": [
+      {
+        "name": "d",
+        "intelliSenseMode": "linux-gcc-x64",
+        "includePath": ["${workspaceFolder}", "${workspaceFolder}/vendor/include"],
+        "cStandard": "c11"
+      }
+    ],
+    "version": 4
+  }
+  
