@@ -13,22 +13,23 @@ OBJECTS := $(patsubst $(SOURCEDIR)%, $(BUILDDIR)%, $(patsubst %.c,%.o,$(SOURCE))
 #OUT_LIBS := $(BUILDDIR)hamster_crank.a
 OUT_EXECUTABLES := $(BUILDDIR)traversal_game_pc
 
-GLEW_CFLAGS := $(shell pkg-config --cflags --libs glew)
-GLFW_CFLAGS := $(shell pkg-config --cflags --libs glfw3)
+GLEW_CFLAGS := $(shell pkg-config --cflags --libs --static glew)
+GLFW_CFLAGS := $(shell pkg-config --cflags --libs --static glfw3)
 
 #TODO: ideally eliminate this
-VENDOR_ADDITIONAL_INCLUDE_CFLAGS := -I ./$(DEPENDENCYDIR)include/ -Xlinker /home/tusk/dev/traversal_game_pc/vendor/repos/hamster_crank/bin/hamster_crank.o #TODO: .a file not working
+VENDOR_ADDITIONAL_INCLUDE_CFLAGS := -I ./$(DEPENDENCYDIR)include/ -Xlinker /home/tusk/dev/git/traversal_game_pc/vendor/repos/hamster_crank/bin/hamster_crank.o #TODO: .a file not working
 
-CFLAGS := $(GLEW_CFLAGS) $(GLFW_CFLAGS) $(VENDOR_ADDITIONAL_INCLUDE_CFLAGS) -I ./$(INCLUDEDIR)
+CFLAGS :=  $(VENDOR_ADDITIONAL_INCLUDE_CFLAGS) $(GLFW_CFLAGS) $(GLEW_CFLAGS)
 
 all : $(OUT_EXECUTABLES)
 
 # TODO: make it so this doesn't change
 $(OUT_EXECUTABLES): $(OBJECTS)
-	gcc $(CFLAGS) -Xlinker $(OBJECTS) -o $(OUT_EXECUTABLES) 
+	echo $(VENDOR_ADDITIONAL_INCLUDE_CFLAGS)
+	gcc -Xlinker $(OBJECTS) $(CFLAGS) -o $(OUT_EXECUTABLES) -Wl,-rpath=/usr/lib64/
 $(OBJECTS) : $(INCLUDE) $(SOURCE)
 	#$(MAKE) -C $(DEPENDENCYDIR) # run dependency makefile first
-	gcc -I $(CFLAGS) -c $(SOURCE)
+	gcc $(CFLAGS) -c $(SOURCE)
 	mv *.o $(BUILDDIR)
 
 .PHONY : clean
