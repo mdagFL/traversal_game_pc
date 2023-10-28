@@ -1,14 +1,15 @@
-#TODO: linker issues further down dependency chain
-
 SOURCEDIR := source/
 BUILDDIR := bin/
 DEPENDENCYDIR := vendor/
 GENERAL_INCLUDE_DIR := include/
 DEPENDENCY_SUBDIRS := $(DEPENDENCYDIR)repos/hamster_crank/
-INCLUDE_DIRS := $(addprefix -I ,$(GENERAL_INCLUDE_DIR) $(addprefix -I ,$(addsuffix $(GENERAL_INCLUDE_DIR),$(DEPENDENCY_SUBDIRS))))
+DEPENDENCY_LIBS := $(wildcard $(DEPENDENCY_SUBDIRS)bin/*.a) 
+# TODO: -Xlinker vs -l? -l does not work for this?
+DEPENDENCY_CFLAGS := $(addprefix -Xlinker ,$(DEPENDENCY_LIBS))
+INCLUDE_DIRS := $(GENERAL_INCLUDE_DIR) $(addsuffix $(GENERAL_INCLUDE_DIR),$(DEPENDENCY_SUBDIRS))
+INCLUDE_CFLAGS := $(addprefix -I, $(INCLUDE_DIRS))
 SOURCE := $(wildcard $(SOURCEDIR)*.c)
-INCLUDE := $(wildcard $(INCLUDE_DIRS)*.h)
-#INCLUDE := $(addprefix $(INCLUDE_DIRS),$(patsubst %.cpp,%.h,$(wildcard *.cpp)))
+#INCLUDE := $(wildcard $(INCLUDE_DIRS)*.h)
 OBJECTS := $(patsubst $(SOURCEDIR)%, $(BUILDDIR)%, $(patsubst %.c,%.o,$(SOURCE)))
 
 #TODO: make this better
@@ -18,10 +19,7 @@ OUT_EXECUTABLES := $(BUILDDIR)traversal_game_pc
 GLEW_CFLAGS := $(shell pkg-config --cflags --libs --static glew)
 GLFW_CFLAGS := $(shell pkg-config --cflags --libs --static glfw3)
 
-#TODO: ideally eliminate this
-VENDOR_ADDITIONAL_INCLUDE_CFLAGS := -I ./$(DEPENDENCYDIR) -Xlinker /home/tusk/dev/git/traversal_game_pc/vendor/repos/hamster_crank/bin/hamster_crank.o #TODO: .a file not working
-
-CFLAGS :=  $(INCLUDE_DIRS) $(VENDOR_ADDITIONAL_INCLUDE_CFLAGS) $(GLFW_CFLAGS) $(GLEW_CFLAGS)
+CFLAGS :=  $(INCLUDE_CFLAGS) $(DEPENDENCY_CFLAGS) $(GLFW_CFLAGS) $(GLEW_CFLAGS)
 
 .PHONY : all
 all : deps $(OUT_EXECUTABLES)
@@ -33,7 +31,6 @@ deps :$(DEPENDENCY_SUBDIRS)
 # TODO: make it so this doesn't change
 $(OUT_EXECUTABLES) : $(OBJECTS) $(DEPENDENCY_SUBDIRS)
 	echo out_executables
-	echo $(VENDOR_ADDITIONAL_INCLUDE_CFLAGS)
 	gcc -Xlinker $(OBJECTS) $(CFLAGS) -o $(OUT_EXECUTABLES) -Wl,-rpath=/usr/lib64/
 $(OBJECTS) : $(INCLUDE) $(SOURCE)
 	echo objects
@@ -51,7 +48,7 @@ test :
 	# SOURCE DIR:
 	echo $(SOURCEDIR)
 	
-	# INCLUDE DIR:
+	# INCLUDE DIRS:
 	echo $(INCLUDE_DIRS)
 	
 	# BUILD DIR:
@@ -60,6 +57,15 @@ test :
 	# DEPENDENCY DIR:
 	echo $(DEPENDENCYDIR)
 	
+	# DEPENDENCY SUBDIRS
+	echo $(DEPENDENCY_SUBDIRS)
+
+	# DEPENDENCY LIBS
+	echo $(DEPENDENCY_LIBS)
+
+	# DEPENDENCY CFLAGS
+	echo $(DEPENDENCY_CFLAGS)
+
 	# SOURCE FILES:
 	echo $(SOURCE)
 	
