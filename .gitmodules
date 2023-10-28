@@ -1,3 +1,6 @@
 [submodule "vendor/repos/hamster_crank"]
-	path = vendor/repos/hamster_crank
+	path = vendor/hamster_crank
+	url = https://github.com/mdagFL/hamster_crank.git
+[submodule "vendor/hamster_crank"]
+	path = vendor/hamster_crank
 	url = https://github.com/mdagFL/hamster_crank.git

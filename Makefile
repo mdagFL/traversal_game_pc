@@ -2,7 +2,7 @@ SOURCEDIR := source/
 BUILDDIR := bin/
 DEPENDENCYDIR := vendor/
 GENERAL_INCLUDE_DIR := include/
-DEPENDENCY_SUBDIRS := $(DEPENDENCYDIR)repos/hamster_crank/
+DEPENDENCY_SUBDIRS := $(DEPENDENCYDIR)hamster_crank/
 DEPENDENCY_LIBS := $(wildcard $(DEPENDENCY_SUBDIRS)bin/*.a) 
 # TODO: -Xlinker vs -l? -l does not work for this?
 DEPENDENCY_CFLAGS := $(addprefix -Xlinker ,$(DEPENDENCY_LIBS))
@@ -32,11 +32,13 @@ deps :$(DEPENDENCY_SUBDIRS)
 $(OUT_EXECUTABLES) : $(OBJECTS) $(DEPENDENCY_SUBDIRS)
 	echo out_executables
 	gcc -Xlinker $(OBJECTS) $(CFLAGS) -o $(OUT_EXECUTABLES) -Wl,-rpath=/usr/lib64/
-$(OBJECTS) : $(INCLUDE) $(SOURCE)
+$(OBJECTS) : $(INCLUDE) $(SOURCE) $(BUILDDIR)
 	echo objects
 	#$(MAKE) -C $(DEPENDENCYDIR) # run dependency makefile first
 	gcc $(CFLAGS) -c $(SOURCE)
 	mv *.o $(BUILDDIR)
+$(BUILDDIR) :
+	mkdir $(BUILDDIR)
 
 .PHONY : clean
 clean :
