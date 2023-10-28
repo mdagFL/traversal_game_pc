@@ -8,7 +8,7 @@
 int main()
 {
     printf("i ran.\n");
-    hc_foo(3);
+    hc_run();
     //glewInit();
     return 0;
 }

@@ -1,1 +1,0 @@
-void hc_foo( int bar);
