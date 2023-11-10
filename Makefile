@@ -1,9 +1,13 @@
 SOURCEDIR := source/
 BUILDDIR := bin/
-DEPENDENCYDIR := vendor/
 GENERAL_INCLUDE_DIR := include/
-DEPENDENCY_SUBDIRS := $(DEPENDENCYDIR)hamster_crank/
-DEPENDENCY_LIBS := $(wildcard $(DEPENDENCY_SUBDIRS)bin/*.a) 
+EXECUTABLE_NAME := traversal_game_pc
+
+DEPENDENCYDIR := vendor/
+DEPENDENCY_SUBDIRS := $(DEPENDENCYDIR)hamster_crank/ $(DEPENDENCYDIR)hamster_crank/vendor/repos/c_utils
+# TODO: below works but sucks
+DEPENDENCY_LIBS := $(DEPENDENCYDIR)hamster_crank/bin/hamster_crank.a $(DEPENDENCYDIR)hamster_crank/vendor/repos/c_utils/bin/c_utils.a
+
 # TODO: -Xlinker vs -l? -l does not work for this?
 DEPENDENCY_CFLAGS := $(addprefix -Xlinker ,$(DEPENDENCY_LIBS))
 INCLUDE_DIRS := $(GENERAL_INCLUDE_DIR) $(addsuffix $(GENERAL_INCLUDE_DIR),$(DEPENDENCY_SUBDIRS))
