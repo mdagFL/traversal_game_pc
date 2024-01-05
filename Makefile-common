@@ -40,19 +40,22 @@ all : deps $(OUT_FILES)
 .PHONY: deps 
 deps : $(LIB_DIR) $(RECURSIVE_LIB_DIR) $(RECURSIVE_LIB_INCLUDE_DIR) $(DEPENDENCY_SUBDIRS) 
 	echo deps
+	echo $(DEPENDENCY_SUBDIRS)
+	echo $(RECURSIVE_DEPENDENCY_INCLUDE_FILES)
+	echo $(RECURSIVE_LIB_INCLUDE_DIR)
 ifdef DEPENDENCY_SUBDIRS # do nothing if no subdirs
 	echo subdir exists
-	$(MAKE) -C $(DEPENDENCY_SUBDIRS)
-	$(foreach file,$(DEPENDENCY_LIBS),cp $(file) $(RECURSIVE_LIB_DIR))
-ifdef NESTED_INCLUDE_HEADERS
-	$(foreach file,$(NESTED_INCLUDE_HEADERS),cp $(file) $(RECURSIVE_LIB_INCLUDE_DIR))
-endif
+	$(foreach subdir,$(DEPDNENCY_SUBDIRS),$(MAKE) all -C $(subdir))
+	$(foreach file,$(DEPENDENCY_LIBS),cp $(file) $(RECURSIVE_LIB_DIR) ;)
+ifdef DEPENDENCY_INCLUDE_FILES
+	$(foreach file,$(DEPENDENCY_INCLUDE_FILES),cp $(file) $(RECURSIVE_LIB_INCLUDE_DIR) ;)
 endif
 ifdef RECURSIVE_DEPENDENCY_INCLUDE_FILES # copy DEPENDENCY_DEP_INCLUDES h files if they exist
-	$(foreach file,$(RECURSIVE_DEPENDENCY_INCLUDE_FILES),cp $(file) $(RECURSIVE_LIB_INCLUDE_DIR))
+	$(foreach file,$(RECURSIVE_DEPENDENCY_INCLUDE_FILES),cp $(file) $(RECURSIVE_LIB_INCLUDE_DIR) ;)
 endif
 ifdef RECURSIVE_DEPENDENCY_LIBS # copy RECURSIVE_DEPENDENCY_LIBS if they exist
-	$(foreach file,$(RECURSIVE_DEPENDENCY_LIBS),cp $(file) $(RECURSIVE_LIB_DIR))
+	$(foreach file,$(RECURSIVE_DEPENDENCY_LIBS),cp $(file) $(RECURSIVE_LIB_DIR) ;)
+endif
 endif
 
 # TODO: make it so this doesn't change
